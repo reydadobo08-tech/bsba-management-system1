@@ -1,17 +1,26 @@
-// Sample Transaction Data
-const transactions = [
+// Data sets
+let transactions = [
     { id: "2024-0012", name: "Maria Santos", type: "Tuition Fee Payment", details: "₱12,500.00", status: "Approved" },
     { id: "2024-0045", name: "Juan Dela Cruz", type: "Clearance Request", details: "Graduation Form", status: "Pending" },
     { id: "2024-0089", name: "Ana Reyes", type: "Lab Fee Deposit", details: "₱1,500.00", status: "Approved" },
     { id: "2024-0102", name: "Carlos Gomez", type: "Transcript Request", details: "Official Copy", status: "Pending" }
 ];
 
-// Sample Room Data
 const rooms = [
     { name: "BSBA Lab 101", capacity: "40 PCs", type: "Computer Lab", status: "Available" },
     { name: "Lecture Hall 202", capacity: "60 Seats", type: "Lecture Room", status: "Occupied" },
     { name: "Conference Room A", capacity: "20 Seats", type: "Meeting Room", status: "Available" }
 ];
+
+// Elements
+const loginSection = document.getElementById("loginSection");
+const dashboardSection = document.getElementById("dashboardSection");
+const loginForm = document.getElementById("loginForm");
+const loginError = document.getElementById("loginError");
+const logoutBtn = document.getElementById("logoutBtn");
+const welcomeUser = document.getElementById("welcomeUser");
+const navRoleTitle = document.getElementById("navRoleTitle");
+const addTxBtn = document.getElementById("addTxBtn");
 
 const transactionTableBody = document.getElementById("transactionTableBody");
 const searchTransaction = document.getElementById("searchTransaction");
@@ -19,6 +28,45 @@ const filterStatus = document.getElementById("filterStatus");
 const roomGrid = document.getElementById("roomGrid");
 const roomBookingForm = document.getElementById("roomBookingForm");
 const bookingMessage = document.getElementById("bookingMessage");
+
+// Handle Login Authentication
+loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const role = document.getElementById("userRole").value;
+    const user = document.getElementById("loginUser").value.trim();
+    const pass = document.getElementById("loginPass").value;
+
+    // Basic simulation check
+    if ((role === "admin" && user === "admin" && pass === "admin") || 
+        (role === "student" && user !== "" && pass !== "")) {
+        
+        loginSection.classList.add("hidden");
+        dashboardSection.classList.remove("hidden");
+        loginError.classList.add("hidden");
+
+        if (role === "admin") {
+            navRoleTitle.textContent = "Administrator Portal";
+            welcomeUser.textContent = "Logged in as: Admin";
+            addTxBtn.classList.remove("hidden");
+        } else {
+            navRoleTitle.textContent = "Student Portal";
+            welcomeUser.textContent = `Logged in: Student (${user})`;
+            addTxBtn.classList.add("hidden");
+        }
+
+        displayTransactions(transactions);
+        displayRooms();
+    } else {
+        loginError.classList.remove("hidden");
+    }
+});
+
+// Handle Logout
+logoutBtn.addEventListener("click", () => {
+    dashboardSection.classList.add("hidden");
+    loginSection.classList.remove("hidden");
+    loginForm.reset();
+});
 
 // Render Transactions
 function displayTransactions(data) {
@@ -41,8 +89,6 @@ function displayTransactions(data) {
         transactionTableBody.appendChild(row);
     });
 }
-
-displayTransactions(transactions);
 
 // Filter and Search Transactions
 function filterData() {
@@ -80,8 +126,6 @@ function displayRooms() {
         roomGrid.appendChild(col);
     });
 }
-
-displayRooms();
 
 // Handle Room Reservation
 roomBookingForm.addEventListener("submit", (e) => {
